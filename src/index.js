@@ -18,15 +18,20 @@ app.use(express.static(publicDirectoryPath));
 io.on('connection', (socket) => {
   console.log('New WebSocket connection');
 
-  socket.emit('message', generateMessage('Welcome!'));
-  socket.broadcast.emit('message', generateMessage('A new user has joined'));
+  socket.on('join', ({ username, room }) => { 
+    socket.join(room);
+
+    socket.emit('message', generateMessage('Welcome!'));
+    socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`));
+
+  });
 
   socket.on('sendMessage', (message, callback) => { 
     const bwfilter = new Filter();
     if (bwfilter.isProfane(message)) {
       return callback('Profanity is not allowed.')
     }
-    io.emit('message', generateMessage(message));
+    io.to('del city').emit('message', generateMessage(message));
     callback();
   });
 
@@ -39,7 +44,6 @@ io.on('connection', (socket) => {
     io.emit('message', generateMessage('A user has left the chat room'));
   });
 });
-
 
 server.listen(port, () => {
   console.log(`Server is up on port ${port}!`);
