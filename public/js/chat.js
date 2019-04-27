@@ -36,7 +36,6 @@ const autoScroll = () => {
   if (containerHeight - newMessageHeight <= scrollOffset) {
     $messages.scrollTop = $messages.scrollHeight;
   }
-  // console.log(newMessageStyles);
 }
 
 socket.on('message', (message) => { 
